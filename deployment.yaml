@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: amine
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: amine
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  minReadySeconds: 5
+  template:
+    metadata:
+      labels:
+        app: amine
+    spec:
+      containers:
+      - name: wiremind-amine
+        image: amineounissi/my-repo2:latest
+        imagePullPolicy: Always
+        ports:
+            - name: http
+              containerPort: 8089
+              protocol: TCP
+        resources:
+            requests:
+              cpu: 400m
+              memory: 500Mi
+            limits:
+              cpu: 400m
+              memory: 1000Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: amine
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 8089
+  selector:
+    app: amine
